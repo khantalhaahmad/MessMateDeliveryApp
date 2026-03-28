@@ -118,7 +118,7 @@ Constants.java
 ## 👨‍💻 Author
 
 **Talha Ahmad Khan**
-Aspiring Software Engineer | Android & Full-Stack Developer
+ Software Engineer | Android & Full-Stack Developer
 
 ---
 
