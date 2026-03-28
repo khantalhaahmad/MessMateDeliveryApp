@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.messmate.delivery">
+
+    <!-- 🌐 INTERNET -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:label="@string/app_name"
+        android:roundIcon="@android:drawable/sym_def_app_icon"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MessMateDelivery"
+        android:usesCleartextTraffic="true">
+
+        <!-- Splash -->
+        <activity
+            android:name=".ui.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MessMateDelivery">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Login -->
+        <activity android:name=".ui.LoginActivity" />
+
+        <!-- OTP -->
+        <activity android:name=".ui.OtpActivity" />
+
+        <!-- Main -->
+        <activity android:name=".ui.MainActivity" />
+
+        <!-- Order -->
+        <activity android:name=".ui.OrderDetailsActivity" />
+
+    </application>
+
+</manifest>

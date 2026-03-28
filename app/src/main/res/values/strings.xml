@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MessMate Delivery</string>
+    <string name="title_home">Home</string>
+    <string name="title_orders">Orders</string>
+    <string name="title_earnings">Earnings</string>
+    <string name="title_profile">Profile</string>
+</resources>
