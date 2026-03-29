@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- TITLE -->
     <TextView
         android:text="New Order"
         android:textSize="22sp"
@@ -14,6 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <!-- RESTAURANT -->
     <TextView
         android:id="@+id/tvMessName"
         android:textSize="18sp"
@@ -21,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <!-- AMOUNT -->
     <TextView
         android:id="@+id/tvAmount"
         android:textSize="16sp"
@@ -28,31 +31,76 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <!-- CUSTOMER NAME -->
     <TextView
-        android:id="@+id/tvPickup"
+        android:id="@+id/tvCustomerName"
+        android:text="Customer Name"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <!-- CUSTOMER PHONE -->
+    <TextView
+        android:id="@+id/tvCustomerPhone"
+        android:text="Phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- PAYMENT -->
+    <TextView
+        android:id="@+id/tvPayment"
+        android:text="COD"
+        android:textStyle="bold"
+        android:textColor="@color/purple_primary"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- PICKUP -->
+    <TextView
+        android:id="@+id/tvPickup"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- DROP -->
     <TextView
         android:id="@+id/tvDrop"
         android:layout_marginBottom="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <!-- DISTANCE -->
     <TextView
         android:id="@+id/tvDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Distance"
-        android:layout_marginTop="8dp"
         android:textStyle="bold"
-        android:textColor="@color/purple_primary"/>
+        android:textColor="@color/purple_primary"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
+    <!-- TIMER -->
+    <TextView
+        android:id="@+id/tvTimer"
+        android:text="15s"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_red_dark"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- ACCEPT -->
     <Button
         android:id="@+id/btnAccept"
         android:text="Accept Order"
+        android:layout_marginTop="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <!-- REJECT -->
     <Button
         android:id="@+id/btnReject"
         android:text="Reject"

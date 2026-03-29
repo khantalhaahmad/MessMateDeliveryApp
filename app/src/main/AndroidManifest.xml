@@ -6,16 +6,25 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- 📍 LOCATION -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
-        android:icon="@android:drawable/sym_def_app_icon"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
-        android:roundIcon="@android:drawable/sym_def_app_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.MessMateDelivery"
         android:usesCleartextTraffic="true">
 
-        <!-- Splash -->
+        <!-- 🔑 GOOGLE MAP API KEY -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB6sGl66iiA42kM5Ws1wWhWBHjzric6NMo" />
+
+        <!-- 🚀 SPLASH -->
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true"
@@ -26,16 +35,16 @@
             </intent-filter>
         </activity>
 
-        <!-- Login -->
+        <!-- 🔐 LOGIN -->
         <activity android:name=".ui.LoginActivity" />
 
-        <!-- OTP -->
+        <!-- 📲 OTP -->
         <activity android:name=".ui.OtpActivity" />
 
-        <!-- Main -->
+        <!-- 🏠 MAIN -->
         <activity android:name=".ui.MainActivity" />
 
-        <!-- Order -->
+        <!-- 📦 ORDER DETAILS (MAP YAHI PE USE HOGA 🔥) -->
         <activity android:name=".ui.OrderDetailsActivity" />
 
     </application>

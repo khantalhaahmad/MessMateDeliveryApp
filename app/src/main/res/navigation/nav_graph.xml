@@ -3,29 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dashboardFragment">
+    app:startDestination="@id/nav_home">
 
     <fragment
-        android:id="@+id/dashboardFragment"
+        android:id="@+id/nav_home"
         android:name="com.messmate.delivery.ui.DashboardFragment"
-        android:label="Dashboard"
+        android:label="Home"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/ordersFragment"
+        android:id="@+id/nav_orders"
         android:name="com.messmate.delivery.ui.OrdersFragment"
         android:label="Orders"
         tools:layout="@layout/fragment_orders" />
 
     <fragment
-        android:id="@+id/earningsFragment"
+        android:id="@+id/nav_earnings"
         android:name="com.messmate.delivery.ui.EarningsFragment"
         android:label="Earnings"
         tools:layout="@layout/fragment_earnings" />
 
     <fragment
-        android:id="@+id/profileFragment"
+        android:id="@+id/nav_profile"
         android:name="com.messmate.delivery.ui.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
+
 </navigation>

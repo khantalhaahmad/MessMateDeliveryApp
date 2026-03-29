@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="purple_primary">#6C2BD9</color>
     <color name="purple_dark">#4B1C9B</color>
     <color name="orange_accent">#FF6B00</color>
-    
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    
+
     <color name="background_color">#F5F5F5</color>
     <color name="surface_color">#FFFFFF</color>
+
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
+
+    <!-- 🔥 ADD THIS -->
+    <color name="primary">#7B61FF</color>
+
 </resources>

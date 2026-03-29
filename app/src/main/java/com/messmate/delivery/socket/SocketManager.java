@@ -91,7 +91,7 @@ public class SocketManager {
         Socket s = getInstance().socket;
 
         if (s != null) {
-            s.on("NEW_ORDER", args -> {
+            s.on("new-order", args -> {
                 try {
                     JSONObject data = (JSONObject) args[0];
 

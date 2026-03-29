@@ -2,9 +2,8 @@ package com.messmate.delivery.ui;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.*;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -17,6 +16,7 @@ public class NewOrderDialog extends DialogFragment {
     private DialogNewOrderBinding binding;
     private Order order;
     private OnActionListener listener;
+    private CountDownTimer timer;
 
     public interface OnActionListener {
         void onAccept(Order order);
@@ -32,10 +32,8 @@ public class NewOrderDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
-
         return dialog;
     }
 
@@ -69,19 +67,49 @@ public class NewOrderDialog extends DialogFragment {
 
         if (order == null) return;
 
-        // ================= DATA =================
+        // ================= BASIC =================
         binding.tvMessName.setText(order.getMessName());
-        binding.tvAmount.setText("₹" + order.getDeliveryFee());
+        binding.tvAmount.setText("₹" + order.getTotalPrice() + " | Fee ₹" + order.getDeliveryFee());
 
-        if (order.getPickupLocation() != null) {
+        // ================= CUSTOMER =================
+        binding.tvCustomerName.setText(order.getCustomerName());
+        binding.tvCustomerPhone.setText(order.getCustomerPhone());
+
+        // ================= PAYMENT =================
+        binding.tvPayment.setText(order.getPaymentMethod());
+
+        // ================= ADDRESS (SAFE) =================
+        if (order.getPickupLocation() != null && order.getPickupLocation().getAddress() != null) {
             binding.tvPickup.setText("📍 " + order.getPickupLocation().getAddress());
+        } else {
+            binding.tvPickup.setText("📍 " + order.getPickupAddress());
         }
 
-        if (order.getDropLocation() != null) {
+        if (order.getDropLocation() != null && order.getDropLocation().getAddress() != null) {
             binding.tvDrop.setText("🏁 " + order.getDropLocation().getAddress());
+        } else {
+            binding.tvDrop.setText("🏁 " + order.getDropAddress());
         }
 
-        binding.tvDistance.setText("~2.5 km"); // later GPS
+        // ================= DISTANCE (dummy for now) =================
+        binding.tvDistance.setText("~2.5 km");
+
+        // ================= TIMER =================
+        long timeLeft = order.getExpiresAt() - System.currentTimeMillis();
+
+        if (timeLeft > 0) {
+            timer = new CountDownTimer(timeLeft, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    binding.tvTimer.setText((millisUntilFinished / 1000) + "s");
+                }
+
+                public void onFinish() {
+                    dismiss(); // auto close
+                }
+
+            }.start();
+        }
 
         // ================= BUTTONS =================
 
@@ -103,6 +131,11 @@ public class NewOrderDialog extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
+        if (timer != null) {
+            timer.cancel();
+        }
+
         binding = null;
     }
 }

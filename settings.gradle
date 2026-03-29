@@ -10,6 +10,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        // 🔥 ADD THIS (IMPORTANT)
+        maven { url 'https://jitpack.io' }
     }
 }
 rootProject.name = "MessMateDelivery"

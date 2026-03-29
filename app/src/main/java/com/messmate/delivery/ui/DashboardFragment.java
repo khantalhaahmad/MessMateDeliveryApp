@@ -8,6 +8,34 @@ import android.widget.Toast;
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import java.util.List;
+import java.util.ArrayList;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import android.location.Location;
+import android.os.Looper;
+import com.google.android.gms.location.Priority;
+
+import android.location.Address;
+import android.location.Geocoder;
+
+import java.util.Locale;
+import android.graphics.Color;
+
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.animation.Easing;
 
 import com.messmate.delivery.databinding.FragmentDashboardBinding;
 import com.messmate.delivery.models.Order;
@@ -20,7 +48,7 @@ public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
     private DashboardViewModel viewModel;
-
+    private FusedLocationProviderClient fusedLocationClient;
     private Order currentOrder = null;
 
     @Override
@@ -52,6 +80,8 @@ public class DashboardFragment extends Fragment {
         Log.d("PREF_DEBUG", "👤 Agent Name: " + name);
 
         binding.tvGreeting.setText("👋 " + name);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        getLiveLocation();
     }
 
     private void initViewModel() {
@@ -72,7 +102,7 @@ public class DashboardFragment extends Fragment {
         SocketManager.connect();
         Log.d("SOCKET_DEBUG", "📡 Socket Connected");
 
-        SocketManager.joinRoom("delivery_" + agentId);
+        SocketManager.joinRoom("agent_" + agentId);
         Log.d("SOCKET_DEBUG", "🏠 Joined Room: delivery_" + agentId);
 
         SocketManager.onNewOrder(order -> {
@@ -118,8 +148,14 @@ public class DashboardFragment extends Fragment {
             Log.d("EARNINGS_DEBUG", "📡 Earnings Status: " + res.status);
 
             if (res.status == com.messmate.delivery.utils.Resource.Status.SUCCESS && res.data != null) {
-                Log.d("EARNINGS_DEBUG", "💰 Earnings: " + res.data.getTotalEarnings());
-                binding.tvEarnings.setText("₹" + res.data.getTotalEarnings());
+                double today = res.data.getData().getToday();
+
+                Log.d("EARNINGS_DEBUG", "💰 Today Earnings: " + today);
+
+                binding.tvEarnings.setText("₹" + today);
+
+// 🔥 graph call
+                setupWeeklyGraph(res.data.getData().getWeekly());
             }
         });
 
@@ -185,6 +221,69 @@ public class DashboardFragment extends Fragment {
             }
         });
     }
+    private void setupWeeklyGraph(java.util.List<Double> data) {
+
+        if (data == null || data.isEmpty()) return;
+
+        List<Entry> entries = new ArrayList<>();
+
+        for (int i = 0; i < data.size(); i++) {
+            entries.add(new Entry(i, data.get(i).floatValue()));
+        }
+
+        LineDataSet dataSet = new LineDataSet(entries, "Earnings (₹)");
+
+        // 🎨 Styling
+        dataSet.setColor(Color.parseColor("#6C63FF")); // purple
+        dataSet.setLineWidth(3f);
+
+        dataSet.setCircleColor(Color.parseColor("#6C63FF"));
+        dataSet.setCircleRadius(4f);
+
+        dataSet.setDrawValues(false);
+
+        // Smooth curve
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+
+        // Fill gradient
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(Color.parseColor("#D1C4E9"));
+
+        LineData lineData = new LineData(dataSet);
+        binding.chart.setData(lineData);
+
+        // ❌ Remove junk UI
+        binding.chart.getDescription().setEnabled(false);
+        binding.chart.getLegend().setEnabled(true);
+        binding.chart.getLegend().setTextSize(12f);
+        binding.chart.setTouchEnabled(true);
+        binding.chart.setPinchZoom(true);
+        binding.chart.setHighlightPerTapEnabled(true);
+        binding.chart.setTouchEnabled(true);
+        binding.chart.setPinchZoom(true);
+        binding.chart.setHighlightPerTapEnabled(true);
+        binding.chart.getAxisRight().setEnabled(false);
+
+        // ✅ X AXIS (IMPORTANT)
+        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+        XAxis xAxis = binding.chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
+        xAxis.setGranularity(1f);
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextColor(Color.GRAY);
+
+        // ✅ Y AXIS (₹)
+        YAxis yAxis = binding.chart.getAxisLeft();
+        yAxis.setTextColor(Color.GRAY);
+        yAxis.setDrawGridLines(true);
+
+        // 🎯 Animation
+        binding.chart.animateX(1200, Easing.EaseInOutQuad);
+
+        binding.chart.invalidate();
+    }
 
     // ================= LOAD =================
     private void loadData() {
@@ -203,14 +302,46 @@ public class DashboardFragment extends Fragment {
         binding.viewWaiting.setVisibility(View.GONE);
         binding.cardOrder.setVisibility(View.VISIBLE);
 
+        // 🔥 BASIC INFO
         binding.tvOrderMessName.setText(order.getMessName());
         binding.tvOrderFee.setText("₹" + order.getDeliveryFee());
 
-        if (order.getPickupLocation() != null)
-            binding.tvPickupLoc.setText("📍 " + order.getPickupLocation().getAddress());
+        // 🔥 CUSTOMER INFO
+        binding.tvCustomerName.setText(order.getCustomerName());
+        binding.tvCustomerPhone.setText(order.getCustomerPhone());
 
-        if (order.getDropLocation() != null)
+        // 🔥 PAYMENT
+        binding.tvPayment.setText(order.getPaymentMethod());
+
+        // 🔥 ADDRESS (SAFE FALLBACK)
+        if (order.getPickupLocation() != null && order.getPickupLocation().getAddress() != null) {
+            binding.tvPickupLoc.setText("📍 " + order.getPickupLocation().getAddress());
+        } else {
+            binding.tvPickupLoc.setText("📍 " + order.getPickupAddress());
+        }
+
+        if (order.getDropLocation() != null && order.getDropLocation().getAddress() != null) {
             binding.tvDropLoc.setText("🏁 " + order.getDropLocation().getAddress());
+        } else {
+            binding.tvDropLoc.setText("🏁 " + order.getDropAddress());
+        }
+
+        // 🔥 TIMER (FIXED)
+        long timeLeft = order.getExpiresAt() - System.currentTimeMillis();
+
+        if (timeLeft > 0) {
+            new android.os.CountDownTimer(timeLeft, 1000) {
+
+                public void onTick(long millisUntilFinished) {
+                    binding.tvTimer.setText((millisUntilFinished / 1000) + "s");
+                }
+
+                public void onFinish() {
+                    resetToWaiting();
+                }
+
+            }.start();
+        }
 
         updateButton(order);
     }
@@ -332,6 +463,68 @@ public class DashboardFragment extends Fragment {
         });
     }
 
+    private void getLiveLocation() {
+
+        if (ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+
+        LocationRequest locationRequest = new LocationRequest.Builder(
+                Priority.PRIORITY_HIGH_ACCURACY, 5000
+        ).build();
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2000);
+
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+                new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+
+                        if (locationResult == null) return;
+
+                        Location location = locationResult.getLastLocation();
+
+                        if (location != null) {
+
+                            double lat = location.getLatitude();
+                            double lng = location.getLongitude();
+
+                            Log.d("LOCATION_DEBUG", "📍 Lat: " + lat + ", Lng: " + lng);
+
+                            try {
+                                Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                                List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+
+                                if (addresses != null && !addresses.isEmpty()) {
+
+                                    Address address = addresses.get(0);
+
+                                    String area = address.getSubLocality();
+                                    String city = address.getLocality();
+
+                                    if (area == null) area = "";
+                                    if (city == null) city = "";
+
+                                    String locationText = "📍 " + area + ", " + city;
+
+                                    binding.tvLocation.setText(locationText);
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            // 🔥 IMPORTANT: stop updates after getting location
+                            fusedLocationClient.removeLocationUpdates(this);
+                        }
+                    }
+                },
+                Looper.getMainLooper());
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

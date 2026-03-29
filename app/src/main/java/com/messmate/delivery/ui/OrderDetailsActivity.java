@@ -34,10 +34,10 @@ public class OrderDetailsActivity extends AppCompatActivity {
         binding.tvItems.setText("Items: " + (items != null ? items : "Standard Package"));
         binding.tvLocations.setText(locations != null ? locations : "Unknown Locations");
 
-        binding.btnReached.setOnClickListener(v -> updateStatus("Reached Restaurant"));
-        binding.btnPickedUp.setOnClickListener(v -> updateStatus("Picked Up"));
-        binding.btnOut.setOnClickListener(v -> updateStatus("Out for Delivery"));
-        binding.btnDelivered.setOnClickListener(v -> updateStatus("Delivered"));
+        binding.btnReached.setOnClickListener(v -> updateStatus("REACHED_RESTAURANT"));
+        binding.btnPickedUp.setOnClickListener(v -> updateStatus("PICKED_UP"));
+        binding.btnOut.setOnClickListener(v -> updateStatus("OUT_FOR_DELIVERY"));
+        binding.btnDelivered.setOnClickListener(v -> updateStatus("DELIVERED"));
     }
 
     private void updateStatus(String status) {
@@ -51,8 +51,9 @@ public class OrderDetailsActivity extends AppCompatActivity {
                      binding.progressBar.setVisibility(View.GONE);
                      enableButtons();
                      Toast.makeText(this, "Status Updated: " + status, Toast.LENGTH_SHORT).show();
-                     if ("Delivered".equals(status)) {
-                         finish(); // Close activity once delivered
+
+                     if ("DELIVERED".equals(status)) {
+                         finish();
                      }
                      break;
                  case ERROR:

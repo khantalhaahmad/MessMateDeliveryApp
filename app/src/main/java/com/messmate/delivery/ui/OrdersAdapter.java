@@ -3,7 +3,7 @@ package com.messmate.delivery.ui;
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -140,12 +140,20 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.OrderViewH
                 binding.tvDrop.setText("🏁 Drop unavailable");
             }
 
-            // 🚀 Accept Button
-            binding.btnAccept.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onAcceptClicked(order);
-                }
-            });
+            // 🚀 Accept Button (status based)
+            if ("NOT_ASSIGNED".equals(order.getDeliveryStatus())) {
+
+                binding.btnAccept.setVisibility(View.VISIBLE);
+
+                binding.btnAccept.setOnClickListener(v -> {
+                    if (listener != null) {
+                        listener.onAcceptClicked(order);
+                    }
+                });
+
+            } else {
+                binding.btnAccept.setVisibility(View.GONE);
+            }
         }
 
         private String safe(String text) {

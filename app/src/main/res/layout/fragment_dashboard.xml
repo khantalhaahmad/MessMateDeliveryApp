@@ -24,30 +24,55 @@
                 android:layout_marginBottom="20dp"
                 android:padding="8dp">
 
-                <!-- LEFT CONTENT -->
+                <!-- LEFT CONTENT (PRO HEADER) -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
+                    <!-- Greeting (Primary) -->
                     <TextView
                         android:id="@+id/tvGreeting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Welcome Back 👋"
-                        android:textSize="22sp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
-                        android:layout_marginBottom="2dp"/>
+                        android:letterSpacing="0.02"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginBottom="4dp"/>
 
-                    <TextView
-                        android:id="@+id/tvLocation"
+                    <!-- Location Row (Icon + Text aligned) -->
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="📍 Live Location"
-                        android:textSize="13sp"
-                        android:textColor="@color/text_secondary"/>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <!-- Location Icon -->
+                        <!-- Location Icon -->
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_location"
+                            android:tint="@color/primary"
+                            android:layout_marginEnd="4dp"/>
+
+                        <!-- Location Text -->
+                        <TextView
+                            android:id="@+id/tvLocation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nayapalli, Bhubaneswar"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_secondary"
+                            android:maxLines="1"
+                            android:ellipsize="end"/>
+                    </LinearLayout>
+
                 </LinearLayout>
 
 
@@ -92,6 +117,22 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- 📊 WEEKLY GRAPH -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="6dp"
+                android:layout_marginBottom="20dp">
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:padding="12dp"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- 📦 SECTION TITLE -->
             <TextView
                 android:layout_width="wrap_content"
@@ -131,6 +172,7 @@
                     android:alpha="0.8"/>
             </LinearLayout>
 
+
             <!-- 🚀 ACTIVE ORDER CARD -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardOrder"
@@ -167,6 +209,36 @@
                         android:textColor="@color/orange_accent"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="10dp"/>
+                    <!-- 👤 CUSTOMER NAME -->
+                    <TextView
+                        android:id="@+id/tvCustomerName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Customer Name"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginTop="6dp"/>
+
+                    <!-- 📞 PHONE -->
+                    <TextView
+                        android:id="@+id/tvCustomerPhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phone"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"/>
+
+                    <!-- 💳 PAYMENT -->
+                    <TextView
+                        android:id="@+id/tvPayment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="COD"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/purple_primary"
+                        android:layout_marginTop="6dp"/>
 
                     <!-- 📍 Pickup -->
                     <TextView
@@ -197,6 +269,17 @@
                         android:textSize="14sp"
                         android:textColor="@color/purple_primary"
                         android:layout_marginTop="8dp"/>
+
+                    <!-- ⏱️ TIMER -->
+                    <TextView
+                        android:id="@+id/tvTimer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="15s"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:layout_marginTop="6dp"/>
 
                     <!-- 🚀 Action Button -->
                     <com.google.android.material.button.MaterialButton

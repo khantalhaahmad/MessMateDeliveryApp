@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,7 +58,17 @@ public class OrdersFragment extends Fragment implements OrdersAdapter.OnOrderAcc
                 case SUCCESS:
                     binding.progressBar.setVisibility(View.GONE);
                     if (resource.data != null && resource.data.getData() != null && !resource.data.getData().isEmpty()) {
-                        adapter.setOrders(resource.data.getData());
+
+                        List<Order> filteredList = new ArrayList<>();
+
+                        for (Order order : resource.data.getData()) {
+                            // ❌ Delivered orders remove
+                            if (!"DELIVERED".equals(order.getDeliveryStatus())) {
+                                filteredList.add(order);
+                            }
+                        }
+
+                        adapter.setOrders(filteredList);
                         binding.tvNoOrders.setVisibility(View.GONE);
                         binding.rvOrders.setVisibility(View.VISIBLE);
                     } else {
