@@ -131,11 +131,16 @@ public class OtpActivity extends AppCompatActivity {
 
     private void sendToBackend(String firebaseToken) {
 
+        Log.d("LOGIN_DEBUG", "🔥 Firebase Token: " + firebaseToken);
+
         ApiService api = ApiClient.getClient(this).create(ApiService.class);
 
-        // 🔥 FIX: remove "Bearer " (interceptor handle karega)
+        // ✅ FIX: NO Bearer here
+        Log.d("LOGIN_DEBUG", "🚀 Sending Bearer Token");
         Call<LoginResponse> call =
                 api.firebaseLogin("Bearer " + firebaseToken);
+
+        Log.d("LOGIN_DEBUG", "📡 Sending login request to backend...");
 
         call.enqueue(new Callback<LoginResponse>() {
 
@@ -145,9 +150,23 @@ public class OtpActivity extends AppCompatActivity {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnVerify.setEnabled(true);
 
+                Log.d("LOGIN_DEBUG", "⬅️ Response Code: " + response.code());
+
+                if (response.errorBody() != null) {
+                    try {
+                        Log.e("LOGIN_DEBUG", "❌ Error Body: " + response.errorBody().string());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 if (response.isSuccessful() && response.body() != null) {
 
                     LoginResponse data = response.body();
+
+                    Log.d("LOGIN_DEBUG", "✅ API Success: " + data.isSuccess());
+                    Log.d("LOGIN_DEBUG", "📩 Message: " + data.getMessage());
+                    Log.d("LOGIN_DEBUG", "🔐 Token from backend: " + data.getToken());
 
                     if (!data.isSuccess()) {
                         Toast.makeText(OtpActivity.this,
@@ -159,25 +178,32 @@ public class OtpActivity extends AppCompatActivity {
                     /* ✅ SAVE TOKEN */
                     prefsManager.saveToken(data.getToken());
 
+                    Log.d("LOGIN_DEBUG", "💾 Token Saved Successfully");
+
                     // 🔥 IMPORTANT: refresh API client
                     ApiClient.clearClient();
 
-                    Log.d("TOKEN_SAVED", data.getToken());
-
                     /* ✅ SAVE AGENT */
                     if (data.getAgent() != null) {
+                        Log.d("LOGIN_DEBUG", "👤 Agent ID: " + data.getAgent().getId());
+                        Log.d("LOGIN_DEBUG", "👤 Agent Name: " + data.getAgent().getName());
+
                         prefsManager.saveAgentId(data.getAgent().getId());
                         prefsManager.saveAgentName(data.getAgent().getName());
+                    } else {
+                        Log.e("LOGIN_DEBUG", "❌ Agent is NULL");
                     }
 
                     /* ✅ SAVE ROLE */
                     prefsManager.saveRole("delivery");
+                    Log.d("LOGIN_DEBUG", "🎭 Role Saved: delivery");
 
                     /* 🚀 NAVIGATE */
                     startActivity(new Intent(OtpActivity.this, MainActivity.class));
                     finish();
 
                 } else {
+                    Log.e("LOGIN_DEBUG", "❌ Login failed (response not successful)");
                     Toast.makeText(OtpActivity.this,
                             "Login failed",
                             Toast.LENGTH_SHORT).show();
@@ -190,7 +216,8 @@ public class OtpActivity extends AppCompatActivity {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnVerify.setEnabled(true);
 
-                Log.e("API_ERROR", t.getMessage());
+                Log.e("LOGIN_DEBUG", "💥 API FAILURE: " + t.getMessage());
+
                 Toast.makeText(OtpActivity.this,
                         "Network error",
                         Toast.LENGTH_SHORT).show();

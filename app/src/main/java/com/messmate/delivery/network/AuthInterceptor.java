@@ -1,5 +1,7 @@
 package com.messmate.delivery.network;
 
+import android.util.Log;
+
 import com.messmate.delivery.utils.SharedPreferencesManager;
 
 import java.io.IOException;
@@ -20,22 +22,52 @@ public class AuthInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
 
         Request originalRequest = chain.request();
+        String path = originalRequest.url().encodedPath();
 
         String token = prefsManager.getToken();
 
-        // ✅ Skip adding token for Firebase login API
-        if (originalRequest.url().encodedPath().contains("auth/firebase-login")) {
+        // 🔍 DEBUG: request info
+        Log.d("AUTH_DEBUG", "➡️ URL: " + originalRequest.url());
+        Log.d("AUTH_DEBUG", "➡️ Path: " + path);
+        Log.d("AUTH_DEBUG", "➡️ Token from prefs: " + token);
+
+        /* ============================================================
+           🔥 1. SKIP FIREBASE LOGIN (VERY IMPORTANT)
+        ============================================================ */
+        if (path.contains("firebase-login")) {
+            Log.d("AUTH_DEBUG", "⏭️ Skipping interceptor (Firebase login)");
             return chain.proceed(originalRequest);
         }
 
-        // ✅ Attach JWT automatically
+        /* ============================================================
+           🔐 2. ATTACH JWT TOKEN
+        ============================================================ */
         if (token != null && !token.isEmpty()) {
+
+            String finalToken = "Bearer " + token;
+
+            Log.d("AUTH_DEBUG", "✅ Adding Authorization Header");
+
             Request newRequest = originalRequest.newBuilder()
-                    .addHeader("Authorization", "Bearer " + token)
+                    .header("Authorization", finalToken) // 🔥 use header (replace)
                     .build();
-            return chain.proceed(newRequest);
+
+            Response response = chain.proceed(newRequest);
+
+            Log.d("AUTH_DEBUG", "⬅️ Response Code: " + response.code());
+
+            return response;
         }
 
-        return chain.proceed(originalRequest);
+        /* ============================================================
+           ❌ 3. NO TOKEN CASE
+        ============================================================ */
+        Log.e("AUTH_DEBUG", "❌ No token found → sending without auth");
+
+        Response response = chain.proceed(originalRequest);
+
+        Log.d("AUTH_DEBUG", "⬅️ Response Code (No Token): " + response.code());
+
+        return response;
     }
 }

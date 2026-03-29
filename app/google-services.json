@@ -51,6 +51,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "568163125221-u65lhuvv14dn6cicn07os2srj3g2g2qh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.messmate.delivery",
+            "certificate_hash": "92fc5d977690692b80d60aa7753bdf7cfd903756"
+          }
+        },
+        {
           "client_id": "568163125221-i0vsvhprnd9nh0ec6he7jo4jcmdsvh1u.apps.googleusercontent.com",
           "client_type": 3
         }

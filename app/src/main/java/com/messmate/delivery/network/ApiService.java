@@ -17,33 +17,77 @@ import retrofit2.http.POST;
 public interface ApiService {
 
     /* ============================================================
-       🔥 FIREBASE LOGIN (TOKEN FROM FIREBASE)
+       🔥 AUTH (FIREBASE LOGIN)
     ============================================================ */
 
-    @POST("auth/firebase-login")
+    /**
+     * 🔐 Firebase Login
+     * Header: Authorization: Bearer <firebase_token>
+8102195503     *
+     * ⚠️ NOTE:
+     * - Interceptor is skipped for this API
+     * - Bearer manually add karna hai (OtpActivity me)
+     */
+    @POST("api/auth/firebase-login")
     Call<LoginResponse> firebaseLogin(
             @Header("Authorization") String firebaseToken
     );
 
+
     /* ============================================================
-       🚚 DELIVERY APIs (JWT VIA INTERCEPTOR)
+       🚚 DELIVERY APIs (AUTO JWT VIA INTERCEPTOR)
     ============================================================ */
 
-    @POST("delivery/go-online")
+    /**
+     * 🟢 GO ONLINE
+     * Auth: JWT (Interceptor)
+     */
+    @POST("api/delivery/go-online")
     Call<GenericResponse> goOnline();
 
-    @POST("delivery/go-offline")
+
+    /**
+     * 🔴 GO OFFLINE
+     * Auth: JWT (Interceptor)
+     */
+    @POST("api/delivery/go-offline")
     Call<GenericResponse> goOffline();
 
-    @GET("delivery/available-orders")
+
+    /**
+     * 📦 GET AVAILABLE ORDERS
+     * Auth: JWT (Interceptor)
+     */
+    @GET("api/delivery/available-orders")
     Call<AvailableOrdersResponse> getAvailableOrders();
 
-    @POST("delivery/accept-order")
-    Call<GenericResponse> acceptOrder(@Body Map<String, String> body);
 
-    @POST("delivery/update-status")
-    Call<GenericResponse> updateOrderStatus(@Body OrderStatusRequest request);
+    /**
+     * ✅ ACCEPT ORDER
+     * Body: { orderId }
+     * Auth: JWT (Interceptor)
+     */
+    @POST("api/delivery/accept-order")
+    Call<GenericResponse> acceptOrder(
+            @Body Map<String, String> body
+    );
 
-    @GET("delivery/earnings")
+
+    /**
+     * 🔄 UPDATE ORDER STATUS
+     * Body: OrderStatusRequest
+     * Auth: JWT (Interceptor)
+     */
+    @POST("api/delivery/update-status")
+    Call<GenericResponse> updateOrderStatus(
+            @Body OrderStatusRequest request
+    );
+
+
+    /**
+     * 💰 GET EARNINGS
+     * Auth: JWT (Interceptor)
+     */
+    @GET("api/delivery/earnings")
     Call<EarningsResponse> getEarnings();
 }

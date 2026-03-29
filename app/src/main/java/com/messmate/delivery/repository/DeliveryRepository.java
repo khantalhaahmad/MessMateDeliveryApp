@@ -1,5 +1,7 @@
 package com.messmate.delivery.repository;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -19,148 +21,85 @@ import retrofit2.Response;
 
 public class DeliveryRepository {
 
+    private static final String TAG = "DeliveryRepository";
+
     private final ApiService apiService;
 
     public DeliveryRepository(ApiService apiService) {
         this.apiService = apiService;
     }
 
-    /* ===============================
-       🟢 ONLINE / OFFLINE
-    =============================== */
-    public LiveData<Resource<GenericResponse>> toggleStatus(boolean online) {
-        MutableLiveData<Resource<GenericResponse>> data = new MutableLiveData<>();
-        data.setValue(Resource.loading(null));
+    // ================= GENERIC HANDLER =================
+    private <T> LiveData<Resource<T>> execute(Call<T> call) {
 
+        MutableLiveData<Resource<T>> liveData = new MutableLiveData<>();
+        liveData.setValue(Resource.loading(null));
+
+        call.enqueue(new Callback<T>() {
+            @Override
+            public void onResponse(Call<T> call, Response<T> response) {
+
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(Resource.success(response.body()));
+                } else {
+                    String errorMsg = "API Error: " + response.code();
+
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg += " - " + response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.e(TAG, errorMsg);
+                    liveData.setValue(Resource.error(errorMsg, null));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<T> call, Throwable t) {
+                Log.e(TAG, "Network Error: " + t.getMessage());
+                liveData.setValue(Resource.error(t.getMessage(), null));
+            }
+        });
+
+        return liveData;
+    }
+
+    /* ================= ONLINE / OFFLINE ================= */
+    public LiveData<Resource<GenericResponse>> toggleStatus(boolean online) {
         Call<GenericResponse> call = online
                 ? apiService.goOnline()
                 : apiService.goOffline();
 
-        call.enqueue(new Callback<GenericResponse>() {
-            @Override
-            public void onResponse(Call<GenericResponse> call, Response<GenericResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    data.setValue(Resource.success(response.body()));
-                } else {
-                    data.setValue(Resource.error("Failed to update status", null));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GenericResponse> call, Throwable t) {
-                data.setValue(Resource.error(t.getMessage(), null));
-            }
-        });
-
-        return data;
+        return execute(call);
     }
 
-    /* ===============================
-       📦 AVAILABLE ORDERS
-    =============================== */
+    /* ================= AVAILABLE ORDERS ================= */
     public LiveData<Resource<AvailableOrdersResponse>> getAvailableOrders() {
-        MutableLiveData<Resource<AvailableOrdersResponse>> data = new MutableLiveData<>();
-        data.setValue(Resource.loading(null));
-
-        apiService.getAvailableOrders().enqueue(new Callback<AvailableOrdersResponse>() {
-            @Override
-            public void onResponse(Call<AvailableOrdersResponse> call, Response<AvailableOrdersResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    data.setValue(Resource.success(response.body()));
-                } else {
-                    data.setValue(Resource.error("Failed to fetch orders", null));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AvailableOrdersResponse> call, Throwable t) {
-                data.setValue(Resource.error(t.getMessage(), null));
-            }
-        });
-
-        return data;
+        return execute(apiService.getAvailableOrders());
     }
 
-    /* ===============================
-       ✅ ACCEPT ORDER
-    =============================== */
+    /* ================= ACCEPT ORDER ================= */
     public LiveData<Resource<GenericResponse>> acceptOrder(String orderId) {
-        MutableLiveData<Resource<GenericResponse>> data = new MutableLiveData<>();
-        data.setValue(Resource.loading(null));
 
         Map<String, String> body = new HashMap<>();
         body.put("orderId", orderId);
 
-        apiService.acceptOrder(body).enqueue(new Callback<GenericResponse>() {
-            @Override
-            public void onResponse(Call<GenericResponse> call, Response<GenericResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    data.setValue(Resource.success(response.body()));
-                } else {
-                    data.setValue(Resource.error("Failed to accept order", null));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GenericResponse> call, Throwable t) {
-                data.setValue(Resource.error(t.getMessage(), null));
-            }
-        });
-
-        return data;
+        return execute(apiService.acceptOrder(body));
     }
 
-    /* ===============================
-       🔄 UPDATE ORDER STATUS
-    =============================== */
+    /* ================= UPDATE STATUS ================= */
     public LiveData<Resource<GenericResponse>> updateOrderStatus(String orderId, String status) {
-        MutableLiveData<Resource<GenericResponse>> data = new MutableLiveData<>();
-        data.setValue(Resource.loading(null));
 
-        apiService.updateOrderStatus(
-                new OrderStatusRequest(orderId, status)
-        ).enqueue(new Callback<GenericResponse>() {
-            @Override
-            public void onResponse(Call<GenericResponse> call, Response<GenericResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    data.setValue(Resource.success(response.body()));
-                } else {
-                    data.setValue(Resource.error("Failed to update status", null));
-                }
-            }
+        OrderStatusRequest request = new OrderStatusRequest(orderId, status);
 
-            @Override
-            public void onFailure(Call<GenericResponse> call, Throwable t) {
-                data.setValue(Resource.error(t.getMessage(), null));
-            }
-        });
-
-        return data;
+        return execute(apiService.updateOrderStatus(request));
     }
 
-    /* ===============================
-       💰 EARNINGS
-    =============================== */
+    /* ================= EARNINGS ================= */
     public LiveData<Resource<EarningsResponse>> getEarnings() {
-        MutableLiveData<Resource<EarningsResponse>> data = new MutableLiveData<>();
-        data.setValue(Resource.loading(null));
-
-        apiService.getEarnings().enqueue(new Callback<EarningsResponse>() {
-            @Override
-            public void onResponse(Call<EarningsResponse> call, Response<EarningsResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    data.setValue(Resource.success(response.body()));
-                } else {
-                    data.setValue(Resource.error("Failed to fetch earnings", null));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<EarningsResponse> call, Throwable t) {
-                data.setValue(Resource.error(t.getMessage(), null));
-            }
-        });
-
-        return data;
+        return execute(apiService.getEarnings());
     }
 }
