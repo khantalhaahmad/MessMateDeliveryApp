@@ -1,20 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- 🔵 PRIMARY BRAND COLORS -->
+    <color name="primary">#7B61FF</color>
+    <color name="purple">#6C3EF4</color>
     <color name="purple_primary">#6C2BD9</color>
     <color name="purple_dark">#4B1C9B</color>
+
+    <!-- 🟠 ACCENT -->
     <color name="orange_accent">#FF6B00</color>
 
+    <!-- ⚫ BASIC -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="background_color">#F5F5F5</color>
+    <!-- 🎨 BACKGROUND -->
+    <color name="background_color">#F5F6FA</color>
     <color name="surface_color">#FFFFFF</color>
 
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
+    <!-- 📝 TEXT -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#7A7A7A</color>
 
-    <!-- 🔥 ADD THIS -->
-    <color name="primary">#7B61FF</color>
+    <!-- 🟢 STATUS COLORS (future use) -->
+    <color name="success">#22C55E</color>
+    <color name="warning">#F59E0B</color>
+    <color name="error">#EF4444</color>
+
+    <!-- 🌫️ DIVIDER / BORDER -->
+    <color name="divider">#E5E7EB</color>
 
 </resources>
